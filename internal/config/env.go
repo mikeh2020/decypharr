@@ -70,6 +70,9 @@ func (c *Config) applyEnvOverrides() {
 	if val := getEnv("ENABLE_WEBDAV_AUTH"); val != "" {
 		c.EnableWebdavAuth = parseBool(val)
 	}
+	if val := getEnv("WEBDAV_SERVE_FROM_RCLONE"); val != "" {
+		c.WebDavServeFromRclone = parseBool(val)
+	}
 	if val := getEnv("RETRIES"); val != "" {
 		if v, err := strconv.Atoi(val); err == nil {
 			c.Retries = v

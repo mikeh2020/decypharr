@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 
+	"github.com/sirrobot01/decypharr/internal/config"
 	"github.com/sirrobot01/decypharr/internal/customerror"
 	"github.com/sirrobot01/decypharr/internal/utils"
 	"github.com/sirrobot01/decypharr/pkg/manager"
@@ -96,6 +97,20 @@ func (h *Handler) handleDownload(info *manager.FileInfo, w http.ResponseWriter, 
 	}
 	if entry == nil {
 		http.Error(w, "File Not Found", http.StatusNotFound)
+		return
+	}
+
+	if config.Get().WebDavServeFromRclone && entry.IsTorrent() {
+		link, err := h.manager.GetDownloadLink(r.Context(), entry, info.Name())
+		if err != nil || link.Empty() {
+			http.Error(w, "Could not fetch download link", http.StatusPreconditionFailed)
+			return
+		}
+
+		w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename*=UTF-8''%s", utils.PathUnescape(info.Name())))
+		w.Header().Set("X-Accel-Redirect", link.DownloadLink)
+		w.Header().Set("X-Accel-Buffering", "no")
+		http.Redirect(w, r, link.DownloadLink, http.StatusTemporaryRedirect)
 		return
 	}
 

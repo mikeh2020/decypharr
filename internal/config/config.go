@@ -152,7 +152,8 @@ type Config struct {
 	NZBUserAgent       string   `json:"nzb_user_agent,omitempty"` // User agent for downloading NZBs
 	Auth               *Auth    `json:"-"`
 
-	DisableWebDav bool `json:"disable_webdav,omitempty"`
+	DisableWebDav         bool `json:"disable_webdav,omitempty"`
+	WebDavServeFromRclone bool `json:"webdav_serve_from_rclone,omitempty"`
 
 	// Notifications configuration
 	Notifications Notifications `json:"notifications,omitempty"`
